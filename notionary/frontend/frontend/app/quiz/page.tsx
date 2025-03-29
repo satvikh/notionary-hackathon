@@ -202,41 +202,10 @@ export default function QuizPage() {
         setTranscript("")
       }, 300)
     } else {
-      // Calculate results
-      const results = quizQuestions.map((q) => {
-        const userAnswer = answers[q.id]
-        let isCorrect = false
-  
-        if (q.type === "mcq") {
-          isCorrect = q.options[userAnswer] === q.correctAnswer
-        } else if (q.type === "short_answer") {
-          isCorrect = userAnswer?.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()
-        }
-  
-        return {
-          id: q.id,
-          question: q.question,
-          userAnswer: q.type === "mcq" ? q.options[userAnswer] : userAnswer,
-          correctAnswer: q.correctAnswer,
-          isCorrect,
-        }
-      })
-  
-      const correctCount = results.filter((r) => r.isCorrect).length
-      const totalQuestions = quizQuestions.length
-  
-      const resultData = {
-        correctAnswers: correctCount,
-        totalQuestions,
-        questions: results,
-      }
-  
-      localStorage.setItem("quizResults", JSON.stringify(resultData))
-  
+      // Navigate to results page
       window.location.href = "/results"
     }
   }
-  
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
