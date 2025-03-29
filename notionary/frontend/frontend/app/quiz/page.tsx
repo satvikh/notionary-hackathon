@@ -190,62 +190,66 @@ export default function QuizPage() {
     const selectedOption = answers[currentQuestion.id] !== undefined ? answers[currentQuestion.id] : null
     const isCorrect = showAnswer && selectedOption === currentQuestion.correctAnswer
     const isIncorrect = showAnswer && selectedOption !== null && selectedOption !== currentQuestion.correctAnswer
-    const correctAnswerText = currentQuestion.options[currentQuestion.correctAnswer]
+    
+    let correctAnswerText = currentQuestion.options[currentQuestion.correctAnswer];
+  
+  // Handle both number and string indices
+  
 
-    return (
-      <div className="space-y-4">
-        {/* Enhanced Answer Display */}
-        {showAnswer && (
-          <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-4 animate-in fade-in duration-300">
-            <div className="flex items-start">
-              <div className="mr-3 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
-                <Check className="h-4 w-4 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-medium text-green-800">Correct Answer:</h3>
-                <p className="mt-1">{correctAnswerText}</p>
-              </div>
+  return (
+    <div className="space-y-4">
+      {/* Enhanced Answer Display */}
+      {showAnswer && (
+        <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-4 animate-in fade-in duration-300">
+          <div className="flex items-start">
+            <div className="mr-3 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
+              <Check className="h-4 w-4 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-medium text-green-800">Correct Answer:</h3>
+              <p className="mt-1">{correctAnswerText}</p>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        <RadioGroup
-          value={selectedOption !== null ? selectedOption.toString() : undefined}
-          onValueChange={handleMCQChange}
-          className="space-y-3"
-        >
-          {currentQuestion.options.map((option, index) => (
-            <div
-              key={index}
-              className={`flex items-start space-x-2 rounded-md border p-3 transition-all ${
-                showAnswer && index === currentQuestion.correctAnswer
-                  ? "border-green-500 bg-green-50 ring-1 ring-green-500"
-                  : isIncorrect && selectedOption === index
-                    ? "border-red-500 bg-red-50"
-                    : "hover:border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-              <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
-                {option}
-                {showAnswer && index === currentQuestion.correctAnswer && (
-                  <Check className="inline-block ml-2 h-4 w-4 text-green-600" />
-                )}
-                {isIncorrect && selectedOption === index && <X className="inline-block ml-2 h-4 w-4 text-red-600" />}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-
-        {inputMode === "voice" && transcript && (
-          <div className="mt-4 p-3 border rounded-md bg-gray-50">
-            <p className="text-sm font-medium">Transcript:</p>
-            <p className="text-sm">{transcript}</p>
+      <RadioGroup
+        value={selectedOption !== null ? selectedOption.toString() : undefined}
+        onValueChange={handleMCQChange}
+        className="space-y-3"
+      >
+        {currentQuestion.options.map((option, index) => (
+          <div
+            key={index}
+            className={`flex items-start space-x-2 rounded-md border p-3 transition-all ${
+              showAnswer && index === currentQuestion.correctAnswer
+                ? "border-green-500 bg-green-50 ring-1 ring-green-500"
+                : isIncorrect && selectedOption === index
+                  ? "border-red-500 bg-red-50"
+                  : "hover:border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+            <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
+              {option}
+              {showAnswer && index === currentQuestion.correctAnswer && (
+                <Check className="inline-block ml-2 h-4 w-4 text-green-600" />
+              )}
+              {isIncorrect && selectedOption === index && <X className="inline-block ml-2 h-4 w-4 text-red-600" />}
+            </Label>
           </div>
-        )}
-      </div>
-    )
-  }
+        ))}
+      </RadioGroup>
+
+      {inputMode === "voice" && transcript && (
+        <div className="mt-4 p-3 border rounded-md bg-gray-50">
+          <p className="text-sm font-medium">Transcript:</p>
+          <p className="text-sm">{transcript}</p>
+        </div>
+      )}
+    </div>
+  )
+}
 
   const renderShortAnswerQuestion = () => {
     const userAnswer = answers[currentQuestion.id] || ""
