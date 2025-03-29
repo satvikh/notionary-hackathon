@@ -1,13 +1,31 @@
+const express = require("express");
 const Groq = require("groq-sdk");
-require("dotenv").config(); // Load environment variables
+const cors = require("cors");
+
+
+
+
+require("dotenv").config();
 
 const { fetchFullNotes } = require("./services/notionService"); // ✅ added
 
+const app = express();
+const port = 3001; // Change if needed
+app.use(cors());// ✅ Enable CORS
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-async function main() {
-  const notionData = await fetchFullNotes(); // ✅ replaced hardcoded data
+// ✅ Caching logic to prevent multiple API calls
+let cachedQuiz = null;
+let lastFetchTime = 0;
+const CACHE_DURATION_MS = 5 * 60 * 1000; // Cache for 5 minutes
 
+async function generateQuiz() {
+  const notionData = await fetchFullNotes(); // ✅ dynamically fetch data
+  if (!notionData) {
+    throw new Error("Failed to fetch data from Notion");
+  }
+
+  // 📝 Do not modify the prompt here
   const groqPrompt = `
 You are an AI trained to create engaging quizzes from structured data. You will receive a JSON input that contains all the content of a Notion database. Your task is to generate a 20-question quiz based on this content, ensuring a mix of multiple-choice and free-response questions. 
 
@@ -37,7 +55,8 @@ ${JSON.stringify(notionData, null, 2)}
 ### 📤 Expected Output JSON Format:
 {
   "quiz": [
-    { "id": "1",
+    {
+      "id": "1",
       "question": "What is the primary goal of machine learning?",
       "type": "mcq",
       "options": [
@@ -59,20 +78,47 @@ ${JSON.stringify(notionData, null, 2)}
 `;
 
   const chatCompletion = await getGroqChatCompletion(groqPrompt);
-  console.log(chatCompletion.choices[0]?.message?.content || "");
+  console.log("Chat Completion");
+  return JSON.parse(chatCompletion.choices[0]?.message?.content || "{}");
 }
 
 async function getGroqChatCompletion(prompt) {
   return groq.chat.completions.create({
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    response_format: {"type": "json_object"},
+    messages: [{ role: "user", content: prompt }],
+    response_format: { type: "json_object" },
     model: "llama-3.3-70b-versatile",
   });
 }
 
-main().catch(console.error);
+// ✅ API endpoint to serve quiz questions with caching
+app.get("/api/quiz", async (req, res) => {
+  try {
+    const now = Date.now();
+
+    // Serve cached data if available and not expired
+    if (cachedQuiz && now - lastFetchTime < CACHE_DURATION_MS) {
+      console.log("✅ Returning cached quiz data");
+      console.log(cachedQuiz);
+      return res.json(cachedQuiz);
+    }
+
+    // Fetch new data if cache is expired or not available
+    console.log("🔄 Fetching new quiz data...");
+    const quizData = await generateQuiz();
+
+    // Cache the result
+    cachedQuiz = quizData;
+    lastFetchTime = now;
+
+    res.json(quizData);
+  } catch (error) {
+    console.error("Error generating quiz:", error);
+    res.status(500).send("Error generating quiz");
+  }
+});
+
+// ✅ Start server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
