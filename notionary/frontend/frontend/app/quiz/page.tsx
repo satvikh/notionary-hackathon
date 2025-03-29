@@ -20,55 +20,6 @@ declare global {
   }
 }
 
-// Mock questions data with different types
-const mockQuestions = [
-  {
-    id: "1",
-    type: "mcq",
-    question: "What are the main components of a cell?",
-    options: [
-      "Cell membrane, cytoplasm, and nucleus",
-      "Cell wall, mitochondria, and chloroplast",
-      "Nucleus, ribosomes, and endoplasmic reticulum",
-      "Cell membrane, cytoplasm, nucleus, and mitochondria",
-    ],
-    correctAnswer: 3, // Index of the correct option
-  },
-  {
-    id: "2",
-    type: "short_answer",
-    question: "Explain the process of photosynthesis in one sentence.",
-    correctAnswer:
-      "Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water, generating oxygen as a byproduct.",
-  },
-  {
-    id: "3",
-    type: "mcq",
-    question: "Which of the following is NOT a type of RNA?",
-    options: ["mRNA (messenger RNA)", "tRNA (transfer RNA)", "rRNA (ribosomal RNA)", "dRNA (dynamic RNA)"],
-    correctAnswer: 3, // Index of the correct option
-  },
-  {
-    id: "4",
-    type: "short_answer",
-    question: "Describe the structure of DNA.",
-    correctAnswer:
-      "DNA is a double helix structure made up of nucleotides. Each nucleotide contains a phosphate group, a sugar group, and a nitrogen base (adenine, thymine, guanine, or cytosine).",
-  },
-  {
-    id: "5",
-    type: "mcq",
-    question: "What is natural selection?",
-    options: [
-      "The process where organisms better adapted to their environment tend to survive and produce more offspring",
-      "The process of creating genetically identical copies of an organism",
-      "The study of inherited characteristics in living organisms",
-      "The process of creating new species through genetic engineering",
-    ],
-    correctAnswer: 0, // Index of the correct option
-  },
-]
-
 export default function QuizPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isListening, setIsListening] = useState(false)
@@ -239,13 +190,22 @@ export default function QuizPage() {
     const selectedOption = answers[currentQuestion.id] !== undefined ? answers[currentQuestion.id] : null
     const isCorrect = showAnswer && selectedOption === currentQuestion.correctAnswer
     const isIncorrect = showAnswer && selectedOption !== null && selectedOption !== currentQuestion.correctAnswer
+    const correctAnswerText = currentQuestion.options[currentQuestion.correctAnswer]
 
     return (
       <div className="space-y-4">
+        {/* Enhanced Answer Display */}
         {showAnswer && (
-          <div className="rounded-lg bg-primary/5 p-4 mb-4">
-            <h3 className="mb-2 font-medium">Correct Answer:</h3>
-            <p>{currentQuestion.options[currentQuestion.correctAnswer]}</p>
+          <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-4 animate-in fade-in duration-300">
+            <div className="flex items-start">
+              <div className="mr-3 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
+                <Check className="h-4 w-4 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-green-800">Correct Answer:</h3>
+                <p className="mt-1">{correctAnswerText}</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -257,12 +217,12 @@ export default function QuizPage() {
           {currentQuestion.options.map((option, index) => (
             <div
               key={index}
-              className={`flex items-start space-x-2 rounded-md border p-3 ${
+              className={`flex items-start space-x-2 rounded-md border p-3 transition-all ${
                 showAnswer && index === currentQuestion.correctAnswer
-                  ? "border-green-500 bg-green-50"
+                  ? "border-green-500 bg-green-50 ring-1 ring-green-500"
                   : isIncorrect && selectedOption === index
                     ? "border-red-500 bg-red-50"
-                    : ""
+                    : "hover:border-gray-300 hover:bg-gray-50"
               }`}
             >
               <RadioGroupItem value={index.toString()} id={`option-${index}`} />
@@ -293,9 +253,16 @@ export default function QuizPage() {
     return (
       <div className="space-y-4">
         {showAnswer && (
-          <div className="rounded-lg bg-primary/5 p-4 mb-4">
-            <h3 className="mb-2 font-medium">Correct Answer:</h3>
-            <p>{currentQuestion.correctAnswer}</p>
+          <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-4 animate-in fade-in duration-300">
+            <div className="flex items-start">
+              <div className="mr-3 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
+                <Check className="h-4 w-4 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-medium text-green-800">Correct Answer:</h3>
+                <p className="mt-1">{currentQuestion.correctAnswer}</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -464,7 +431,8 @@ export default function QuizPage() {
                     )}
 
                     {!showAnswer && (
-                      <Button variant="outline" onClick={() => setShowAnswer(true)}>
+                      <Button variant="outline" onClick={() => setShowAnswer(true)} className="gap-2">
+                        <Check className="h-4 w-4" />
                         Show Answer
                       </Button>
                     )}
