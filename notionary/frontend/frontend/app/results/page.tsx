@@ -1,66 +1,45 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Check, X, ArrowLeft } from "lucide-react"
 
-// Mock quiz results data
-const mockResults = {
-  totalQuestions: 5,
-  correctAnswers: 3,
-  questions: [
-    {
-      id: "1",
-      question: "What are the main components of a cell?",
-      userAnswer: "Cell membrane, cytoplasm, nucleus, mitochondria, and ribosomes.",
-      correctAnswer:
-        "The main components of a cell include the cell membrane, cytoplasm, nucleus, mitochondria, endoplasmic reticulum, Golgi apparatus, and lysosomes.",
-      isCorrect: true,
-    },
-    {
-      id: "2",
-      question: "Explain the process of photosynthesis.",
-      userAnswer: "Plants use sunlight to make food from water and carbon dioxide.",
-      correctAnswer:
-        "Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water, generating oxygen as a byproduct.",
-      isCorrect: true,
-    },
-    {
-      id: "3",
-      question: "What is the difference between mitosis and meiosis?",
-      userAnswer: "Mitosis makes identical cells and meiosis makes cells for reproduction.",
-      correctAnswer:
-        "Mitosis is cell division that results in two identical daughter cells, while meiosis is cell division that results in four daughter cells each with half the number of chromosomes.",
-      isCorrect: true,
-    },
-    {
-      id: "4",
-      question: "Describe the structure of DNA.",
-      userAnswer: "DNA is made of nucleotides in a spiral shape.",
-      correctAnswer:
-        "DNA is a double helix structure made up of nucleotides. Each nucleotide contains a phosphate group, a sugar group, and a nitrogen base (adenine, thymine, guanine, or cytosine).",
-      isCorrect: false,
-    },
-    {
-      id: "5",
-      question: "What is natural selection?",
-      userAnswer: "When animals evolve to survive better.",
-      correctAnswer:
-        "Natural selection is the process where organisms better adapted to their environment tend to survive and produce more offspring, driving evolution.",
-      isCorrect: false,
-    },
-  ],
-}
-
 export default function ResultsPage() {
+  const [results, setResults] = useState<null | {
+    totalQuestions: number
+    correctAnswers: number
+    questions: {
+      id: string
+      question: string
+      userAnswer: string
+      correctAnswer: string
+      isCorrect: boolean
+    }[]
+  }>(null)
+
   const [expandedQuestions, setExpandedQuestions] = useState<string[]>([])
+
+  useEffect(() => {
+    const stored = localStorage.getItem("quizResults")
+    if (stored) {
+      setResults(JSON.parse(stored))
+    }
+  }, [])
 
   const toggleQuestion = (id: string) => {
     setExpandedQuestions((prev) => (prev.includes(id) ? prev.filter((qId) => qId !== id) : [...prev, id]))
   }
 
-  const percentage = Math.round((mockResults.correctAnswers / mockResults.totalQuestions) * 100)
+  if (!results) {
+    return (
+      <main className="flex items-center justify-center h-screen">
+        <p className="text-lg">No results found.</p>
+      </main>
+    )
+  }
+
+  const percentage = Math.round((results.correctAnswers / results.totalQuestions) * 100)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -87,7 +66,7 @@ export default function ResultsPage() {
 
             <div className="mb-12 rounded-lg border bg-white p-8 text-center shadow-sm">
               <h2 className="mb-6 text-2xl font-bold">
-                You answered {mockResults.correctAnswers} out of {mockResults.totalQuestions} correctly!
+                You answered {results.correctAnswers} out of {results.totalQuestions} correctly!
               </h2>
 
               <div className="mx-auto mb-6 flex h-36 w-36 items-center justify-center rounded-full border-8 border-primary/20">
@@ -97,12 +76,12 @@ export default function ResultsPage() {
               <div className="flex justify-center space-x-4">
                 <div className="flex items-center">
                   <div className="mr-2 h-3 w-3 rounded-full bg-green-500"></div>
-                  <span className="text-sm text-muted-foreground">Correct: {mockResults.correctAnswers}</span>
+                  <span className="text-sm text-muted-foreground">Correct: {results.correctAnswers}</span>
                 </div>
                 <div className="flex items-center">
                   <div className="mr-2 h-3 w-3 rounded-full bg-red-500"></div>
                   <span className="text-sm text-muted-foreground">
-                    Incorrect: {mockResults.totalQuestions - mockResults.correctAnswers}
+                    Incorrect: {results.totalQuestions - results.correctAnswers}
                   </span>
                 </div>
               </div>
@@ -111,7 +90,7 @@ export default function ResultsPage() {
             <h3 className="mb-4 text-xl font-bold">Question Details</h3>
 
             <div className="space-y-4">
-              {mockResults.questions.map((question) => (
+              {results.questions.map((question) => (
                 <div
                   key={question.id}
                   className={`rounded-lg border bg-white shadow-sm transition-all ${
@@ -149,7 +128,7 @@ export default function ResultsPage() {
                     <div className="border-t p-4">
                       <div className="mb-4">
                         <h5 className="mb-1 text-sm font-medium">Your Answer:</h5>
-                        <p className="text-sm">{question.userAnswer}</p>
+                        <p className="text-sm">{question.userAnswer || "No answer provided"}</p>
                       </div>
                       <div>
                         <h5 className="mb-1 text-sm font-medium">Correct Answer:</h5>
@@ -176,7 +155,7 @@ export default function ResultsPage() {
       <footer className="border-t py-6">
         <div className="container px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center">
-            <p className="text-center text-sm text-muted-foreground">Â© 2024 Notionary. All rights reserved.</p>
+            <p className="text-center text-sm text-muted-foreground">© 2024 Notionary. All rights reserved.</p>
           </div>
         </div>
       </footer>
