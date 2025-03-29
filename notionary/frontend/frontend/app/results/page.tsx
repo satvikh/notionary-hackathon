@@ -19,8 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 // Mock quiz results data
 const mockResults = {
-  totalQuestions: 5,
-  correctAnswers: 3,
+  totalQuestions: 20,
+  correctAnswers: 1,
   questions: [
     {
       id: "1",
@@ -121,7 +121,7 @@ export default function ResultsPage() {
         <div className="container flex h-16 items-center px-4 sm:px-6 lg:px-8">
           <Link href="/select-notes" className="flex items-center space-x-2">
             <div className="h-6 w-6 rounded bg-black"></div>
-            <span className="text-xl font-medium">NotionQuiz</span>
+            <span className="text-xl font-medium">Notionary</span>
           </Link>
         </div>
       </header>
@@ -364,7 +364,7 @@ export default function ResultsPage() {
       <footer className="border-t py-6">
         <div className="container px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center">
-            <p className="text-center text-sm text-muted-foreground">© 2024 NotionQuiz. All rights reserved.</p>
+            <p className="text-center text-sm text-muted-foreground">© 2024 Notionary. All rights reserved.</p>
           </div>
         </div>
       </footer>
