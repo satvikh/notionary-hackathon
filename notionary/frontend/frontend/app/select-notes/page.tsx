@@ -10,39 +10,39 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 const mockNotionPages = [
   {
     id: "1",
-    title: "Biology 101",
-    description: "Notes on cell structure, DNA, and basic biological processes.",
-    lastEdited: "2 days ago",
+    title: "Microeconomics",
+    description: "Choices under scarcity; individuals maximize utility, firms maximize profit.",
+    lastEdited: "Today",
   },
   {
     id: "2",
-    title: "World History",
-    description: "Key events from ancient civilizations to modern history.",
-    lastEdited: "1 week ago",
+    title: "Chemistry",
+    description: "Matter and energy interactions; atoms, molecules, reactions, and periodic trends.",
+    lastEdited: "Today",
   },
   {
     id: "3",
-    title: "Physics Fundamentals",
-    description: "Laws of motion, energy, and basic physics concepts.",
-    lastEdited: "3 days ago",
+    title: "Data Structures and Algorithms",
+    description: "Organizing data efficiently; arrays, trees, graphs, sorting, searching algorithms.",
+    lastEdited: "Today",
   },
   {
     id: "4",
-    title: "Programming Basics",
-    description: "Introduction to programming concepts and JavaScript.",
-    lastEdited: "Yesterday",
+    title: "American History",
+    description: "Colonization, revolution, expansion, civil war, rights movements, global influence.",
+    lastEdited: "Today",
   },
   {
     id: "5",
     title: "Literature Notes",
     description: "Analysis of classic novels and literary techniques.",
-    lastEdited: "5 days ago",
+    lastEdited: "Today",
   },
   {
     id: "6",
     title: "Mathematics",
     description: "Algebra, calculus, and statistical methods.",
-    lastEdited: "1 day ago",
+    lastEdited: "Today",
   },
 ]
 
