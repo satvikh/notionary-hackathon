@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "NotionQuiz - Turn your Notion notes into verbal quizzes",
+  title: "Notionary - Turn your Notion notes into verbal quizzes",
   description: "Use AI to test yourself on your own content—automatically.",
     generator: 'v0.dev'
 }

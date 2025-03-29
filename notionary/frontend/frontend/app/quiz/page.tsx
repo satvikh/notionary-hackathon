@@ -317,7 +317,7 @@ export default function QuizPage() {
         <div className="container flex h-16 items-center px-4 sm:px-6 lg:px-8">
           <Link href="/select-notes" className="flex items-center space-x-2">
             <div className="h-6 w-6 rounded bg-black"></div>
-            <span className="text-xl font-medium">NotionQuiz</span>
+            <span className="text-xl font-medium">Notionary</span>
           </Link>
         </div>
       </header>
@@ -400,7 +400,7 @@ export default function QuizPage() {
       <footer className="border-t py-6">
         <div className="container px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center">
-            <p className="text-center text-sm text-muted-foreground">© 2024 NotionQuiz. All rights reserved.</p>
+            <p className="text-center text-sm text-muted-foreground">© 2024 Notionary. All rights reserved.</p>
           </div>
         </div>
       </footer>
