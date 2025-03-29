@@ -46,13 +46,13 @@ ${JSON.stringify(notionData, null, 2)}
         "To design complex neural networks",
         "To replace traditional software development"
       ],
-      "correct_answer": "To enable computers to learn from data"
+      "correctAnswer": "To enable computers to learn from data"
     },
     {
       "id": "2",
       "question": "Explain the process of photosynthesis in one sentence.",
       "type": "short_answer",
-      "correct_answer": "Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water, generating oxygen as a byproduct."
+      "correctAnswer": "Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water, generating oxygen as a byproduct."
     }
   ]
 }
@@ -70,6 +70,7 @@ async function getGroqChatCompletion(prompt) {
         content: prompt,
       },
     ],
+    response_format: {"type": "json_object"},
     model: "llama-3.3-70b-versatile",
   });
 }
