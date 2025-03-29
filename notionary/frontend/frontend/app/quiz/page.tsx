@@ -20,6 +20,55 @@ declare global {
   }
 }
 
+// Mock questions data with different types
+const mockQuestions = [
+  {
+    id: "1",
+    type: "mcq",
+    question: "What are the main components of a cell?",
+    options: [
+      "Cell membrane, cytoplasm, and nucleus",
+      "Cell wall, mitochondria, and chloroplast",
+      "Nucleus, ribosomes, and endoplasmic reticulum",
+      "Cell membrane, cytoplasm, nucleus, and mitochondria",
+    ],
+    correctAnswer: 3, // Index of the correct option
+  },
+  {
+    id: "2",
+    type: "short_answer",
+    question: "Explain the process of photosynthesis in one sentence.",
+    correctAnswer:
+      "Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water, generating oxygen as a byproduct.",
+  },
+  {
+    id: "3",
+    type: "mcq",
+    question: "Which of the following is NOT a type of RNA?",
+    options: ["mRNA (messenger RNA)", "tRNA (transfer RNA)", "rRNA (ribosomal RNA)", "dRNA (dynamic RNA)"],
+    correctAnswer: 3, // Index of the correct option
+  },
+  {
+    id: "4",
+    type: "short_answer",
+    question: "Describe the structure of DNA.",
+    correctAnswer:
+      "DNA is a double helix structure made up of nucleotides. Each nucleotide contains a phosphate group, a sugar group, and a nitrogen base (adenine, thymine, guanine, or cytosine).",
+  },
+  {
+    id: "5",
+    type: "mcq",
+    question: "What is natural selection?",
+    options: [
+      "The process where organisms better adapted to their environment tend to survive and produce more offspring",
+      "The process of creating genetically identical copies of an organism",
+      "The study of inherited characteristics in living organisms",
+      "The process of creating new species through genetic engineering",
+    ],
+    correctAnswer: 0, // Index of the correct option
+  },
+]
+
 export default function QuizPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isListening, setIsListening] = useState(false)
@@ -153,10 +202,41 @@ export default function QuizPage() {
         setTranscript("")
       }, 300)
     } else {
-      // Navigate to results page
+      // Calculate results
+      const results = quizQuestions.map((q) => {
+        const userAnswer = answers[q.id]
+        let isCorrect = false
+  
+        if (q.type === "mcq") {
+          isCorrect = q.options[userAnswer] === q.correctAnswer
+        } else if (q.type === "short_answer") {
+          isCorrect = userAnswer?.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()
+        }
+  
+        return {
+          id: q.id,
+          question: q.question,
+          userAnswer: q.type === "mcq" ? q.options[userAnswer] : userAnswer,
+          correctAnswer: q.correctAnswer,
+          isCorrect,
+        }
+      })
+  
+      const correctCount = results.filter((r) => r.isCorrect).length
+      const totalQuestions = quizQuestions.length
+  
+      const resultData = {
+        correctAnswers: correctCount,
+        totalQuestions,
+        questions: results,
+      }
+  
+      localStorage.setItem("quizResults", JSON.stringify(resultData))
+  
       window.location.href = "/results"
     }
   }
+  
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
@@ -190,66 +270,53 @@ export default function QuizPage() {
     const selectedOption = answers[currentQuestion.id] !== undefined ? answers[currentQuestion.id] : null
     const isCorrect = showAnswer && selectedOption === currentQuestion.correctAnswer
     const isIncorrect = showAnswer && selectedOption !== null && selectedOption !== currentQuestion.correctAnswer
-    
-    let correctAnswerText = currentQuestion.options[currentQuestion.correctAnswer];
-  
-  // Handle both number and string indices
-  
 
-  return (
-    <div className="space-y-4">
-      {/* Enhanced Answer Display */}
-      {showAnswer && (
-        <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-4 animate-in fade-in duration-300">
-          <div className="flex items-start">
-            <div className="mr-3 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
-              <Check className="h-4 w-4 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-medium text-green-800">Correct Answer:</h3>
-              <p className="mt-1">{correctAnswerText}</p>
-            </div>
+    return (
+      <div className="space-y-4">
+        {showAnswer && (
+          <div className="rounded-lg bg-primary/5 p-4 mb-4">
+            <h3 className="mb-2 font-medium">Correct Answer:</h3>
+            <p>{currentQuestion.options[currentQuestion.correctAnswer]}</p>
           </div>
-        </div>
-      )}
+        )}
 
-      <RadioGroup
-        value={selectedOption !== null ? selectedOption.toString() : undefined}
-        onValueChange={handleMCQChange}
-        className="space-y-3"
-      >
-        {currentQuestion.options.map((option, index) => (
-          <div
-            key={index}
-            className={`flex items-start space-x-2 rounded-md border p-3 transition-all ${
-              showAnswer && index === currentQuestion.correctAnswer
-                ? "border-green-500 bg-green-50 ring-1 ring-green-500"
-                : isIncorrect && selectedOption === index
-                  ? "border-red-500 bg-red-50"
-                  : "hover:border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-            <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
-              {option}
-              {showAnswer && index === currentQuestion.correctAnswer && (
-                <Check className="inline-block ml-2 h-4 w-4 text-green-600" />
-              )}
-              {isIncorrect && selectedOption === index && <X className="inline-block ml-2 h-4 w-4 text-red-600" />}
-            </Label>
+        <RadioGroup
+          value={selectedOption !== null ? selectedOption.toString() : undefined}
+          onValueChange={handleMCQChange}
+          className="space-y-3"
+        >
+          {currentQuestion.options.map((option, index) => (
+            <div
+              key={index}
+              className={`flex items-start space-x-2 rounded-md border p-3 ${
+                showAnswer && index === currentQuestion.correctAnswer
+                  ? "border-green-500 bg-green-50"
+                  : isIncorrect && selectedOption === index
+                    ? "border-red-500 bg-red-50"
+                    : ""
+              }`}
+            >
+              <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+              <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
+                {option}
+                {showAnswer && index === currentQuestion.correctAnswer && (
+                  <Check className="inline-block ml-2 h-4 w-4 text-green-600" />
+                )}
+                {isIncorrect && selectedOption === index && <X className="inline-block ml-2 h-4 w-4 text-red-600" />}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+
+        {inputMode === "voice" && transcript && (
+          <div className="mt-4 p-3 border rounded-md bg-gray-50">
+            <p className="text-sm font-medium">Transcript:</p>
+            <p className="text-sm">{transcript}</p>
           </div>
-        ))}
-      </RadioGroup>
-
-      {inputMode === "voice" && transcript && (
-        <div className="mt-4 p-3 border rounded-md bg-gray-50">
-          <p className="text-sm font-medium">Transcript:</p>
-          <p className="text-sm">{transcript}</p>
-        </div>
-      )}
-    </div>
-  )
-}
+        )}
+      </div>
+    )
+  }
 
   const renderShortAnswerQuestion = () => {
     const userAnswer = answers[currentQuestion.id] || ""
@@ -257,16 +324,9 @@ export default function QuizPage() {
     return (
       <div className="space-y-4">
         {showAnswer && (
-          <div className="rounded-lg bg-green-50 border border-green-200 p-4 mb-4 animate-in fade-in duration-300">
-            <div className="flex items-start">
-              <div className="mr-3 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
-                <Check className="h-4 w-4 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-medium text-green-800">Correct Answer:</h3>
-                <p className="mt-1">{currentQuestion.correctAnswer}</p>
-              </div>
-            </div>
+          <div className="rounded-lg bg-primary/5 p-4 mb-4">
+            <h3 className="mb-2 font-medium">Correct Answer:</h3>
+            <p>{currentQuestion.correctAnswer}</p>
           </div>
         )}
 
@@ -311,7 +371,7 @@ export default function QuizPage() {
           <div className="container flex h-16 items-center px-4 sm:px-6 lg:px-8">
             <Link href="/select-notes" className="flex items-center space-x-2">
               <div className="h-6 w-6 rounded bg-black"></div>
-              <span className="text-xl font-medium">Notionary</span>
+              <span className="text-xl font-medium">NotionQuiz</span>
             </Link>
           </div>
         </header>
@@ -324,7 +384,7 @@ export default function QuizPage() {
         <footer className="border-t py-6">
           <div className="container px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center">
-              <p className="text-center text-sm text-muted-foreground">© 2024 Notionary. All rights reserved.</p>
+              <p className="text-center text-sm text-muted-foreground">© 2024 NotionQuiz. All rights reserved.</p>
             </div>
           </div>
         </footer>
@@ -339,7 +399,7 @@ export default function QuizPage() {
           <div className="container flex h-16 items-center px-4 sm:px-6 lg:px-8">
             <Link href="/select-notes" className="flex items-center space-x-2">
               <div className="h-6 w-6 rounded bg-black"></div>
-              <span className="text-xl font-medium">Notionary</span>
+              <span className="text-xl font-medium">NotionQuiz</span>
             </Link>
           </div>
         </header>
@@ -357,7 +417,7 @@ export default function QuizPage() {
         <footer className="border-t py-6">
           <div className="container px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center">
-              <p className="text-center text-sm text-muted-foreground">© 2024 Notionary. All rights reserved.</p>
+              <p className="text-center text-sm text-muted-foreground">© 2024 NotionQuiz. All rights reserved.</p>
             </div>
           </div>
         </footer>
@@ -371,7 +431,7 @@ export default function QuizPage() {
         <div className="container flex h-16 items-center px-4 sm:px-6 lg:px-8">
           <Link href="/select-notes" className="flex items-center space-x-2">
             <div className="h-6 w-6 rounded bg-black"></div>
-            <span className="text-xl font-medium">Notionary</span>
+            <span className="text-xl font-medium">NotionQuiz</span>
           </Link>
         </div>
       </header>
@@ -435,8 +495,7 @@ export default function QuizPage() {
                     )}
 
                     {!showAnswer && (
-                      <Button variant="outline" onClick={() => setShowAnswer(true)} className="gap-2">
-                        <Check className="h-4 w-4" />
+                      <Button variant="outline" onClick={() => setShowAnswer(true)}>
                         Show Answer
                       </Button>
                     )}
@@ -455,11 +514,10 @@ export default function QuizPage() {
       <footer className="border-t py-6">
         <div className="container px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center">
-            <p className="text-center text-sm text-muted-foreground">© 2024 Notionary. All rights reserved.</p>
+            <p className="text-center text-sm text-muted-foreground">© 2024 NotionQuiz. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
   )
 }
-
