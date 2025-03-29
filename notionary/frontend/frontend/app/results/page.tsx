@@ -41,6 +41,19 @@ export default function ResultsPage() {
 
   const percentage = Math.round((results.correctAnswers / results.totalQuestions) * 100)
 
+  // Calculate the circle properties
+  const radius = 60
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (percentage / 100) * circumference
+
+  // Determine color based on percentage
+  const getColorClass = (percent: number) => {
+    if (percent >= 80) return "stroke-green-500"
+    if (percent >= 60) return "stroke-blue-500"
+    if (percent >= 40) return "stroke-yellow-500"
+    return "stroke-red-500"
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
@@ -69,8 +82,35 @@ export default function ResultsPage() {
                 You answered {results.correctAnswers} out of {results.totalQuestions} correctly!
               </h2>
 
-              <div className="mx-auto mb-6 flex h-36 w-36 items-center justify-center rounded-full border-8 border-primary/20">
-                <div className="text-4xl font-bold">{percentage}%</div>
+              <div className="mx-auto mb-6 relative flex h-36 w-36 items-center justify-center">
+                <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 150 150">
+                  {/* Background circle */}
+                  <circle
+                    cx="75"
+                    cy="75"
+                    r={radius}
+                    fill="none"
+                    stroke="currentColor"
+                    className="stroke-primary/20"
+                    strokeWidth="8"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="75"
+                    cy="75"
+                    r={radius}
+                    fill="none"
+                    stroke="currentColor"
+                    className={getColorClass(percentage)}
+                    strokeWidth="8"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-4xl font-bold">{percentage}%</div>
+                </div>
               </div>
 
               <div className="flex justify-center space-x-4">
@@ -162,3 +202,4 @@ export default function ResultsPage() {
     </div>
   )
 }
+
