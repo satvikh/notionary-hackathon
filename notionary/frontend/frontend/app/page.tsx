@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import NotionaryScreenshot from "./Notionary Screenshot.png";
+
 
 export default function LandingPage() {
   return (
@@ -43,28 +45,15 @@ export default function LandingPage() {
 
           {/* Mockup Image */}
           <div className="mt-16 flex justify-center">
-            <div className="relative w-full max-w-4xl overflow-hidden rounded-xl border shadow-lg">
-              <div className="aspect-[16/9] bg-gradient-to-br from-white to-gray-100 p-8">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="h-6 w-48 rounded bg-gray-200"></div>
-                    <div className="h-6 w-24 rounded bg-gray-200"></div>
-                  </div>
-                  <div className="h-12 w-3/4 rounded-lg bg-white shadow-sm"></div>
-                  <div className="mt-8 space-y-4">
-                    <div className="h-4 w-full rounded bg-gray-200"></div>
-                    <div className="h-4 w-5/6 rounded bg-gray-200"></div>
-                    <div className="h-4 w-4/6 rounded bg-gray-200"></div>
-                  </div>
-                  <div className="mt-8 flex justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gray-200"></div>
-                  </div>
-                  <div className="mt-4 flex justify-center">
-                    <div className="h-4 w-32 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-xl border shadow-lg">
+            <div className="aspect-[16/9] bg-gray-100">
+              <img
+                src="/NotionaryScreenshot.png"
+                alt="Mockup"
+                className="h-full w-full object-cover rounded-xl"
+              />
             </div>
+          </div>
           </div>
         </section>
 
