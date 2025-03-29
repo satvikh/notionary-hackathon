@@ -11,7 +11,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Mic, MicOff, ArrowLeft, Volume2, Check, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { apiService, type Question } from "@/lib/api"
 
 // Define SpeechRecognition type
 declare global {
@@ -21,8 +20,56 @@ declare global {
   }
 }
 
+// Mock questions data with different types
+const mockQuestions = [
+  {
+    id: "1",
+    type: "mcq",
+    question: "What are the main components of a cell?",
+    options: [
+      "Cell membrane, cytoplasm, and nucleus",
+      "Cell wall, mitochondria, and chloroplast",
+      "Nucleus, ribosomes, and endoplasmic reticulum",
+      "Cell membrane, cytoplasm, nucleus, and mitochondria",
+    ],
+    correctAnswer: 3, // Index of the correct option
+  },
+  {
+    id: "2",
+    type: "short_answer",
+    question: "Explain the process of photosynthesis in one sentence.",
+    correctAnswer:
+      "Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water, generating oxygen as a byproduct.",
+  },
+  {
+    id: "3",
+    type: "mcq",
+    question: "Which of the following is NOT a type of RNA?",
+    options: ["mRNA (messenger RNA)", "tRNA (transfer RNA)", "rRNA (ribosomal RNA)", "dRNA (dynamic RNA)"],
+    correctAnswer: 3, // Index of the correct option
+  },
+  {
+    id: "4",
+    type: "short_answer",
+    question: "Describe the structure of DNA.",
+    correctAnswer:
+      "DNA is a double helix structure made up of nucleotides. Each nucleotide contains a phosphate group, a sugar group, and a nitrogen base (adenine, thymine, guanine, or cytosine).",
+  },
+  {
+    id: "5",
+    type: "mcq",
+    question: "What is natural selection?",
+    options: [
+      "The process where organisms better adapted to their environment tend to survive and produce more offspring",
+      "The process of creating genetically identical copies of an organism",
+      "The study of inherited characteristics in living organisms",
+      "The process of creating new species through genetic engineering",
+    ],
+    correctAnswer: 0, // Index of the correct option
+  },
+]
+
 export default function QuizPage() {
-  const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState("")
@@ -30,26 +77,10 @@ export default function QuizPage() {
   const [showAnswer, setShowAnswer] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [inputMode, setInputMode] = useState<"voice" | "text">("text")
-  const [isLoading, setIsLoading] = useState(true)
   const recognitionRef = useRef<any>(null)
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const fetchedQuestions = await apiService.getQuestions()
-        setQuestions(fetchedQuestions)
-      } catch (error) {
-        console.error('Error fetching questions:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchQuestions()
-  }, [])
-
-  const currentQuestion = questions[currentQuestionIndex]
-  const progress = (currentQuestionIndex / questions.length) * 100
+  const currentQuestion = mockQuestions[currentQuestionIndex]
+  const progress = (currentQuestionIndex / mockQuestions.length) * 100
 
   useEffect(() => {
     if (typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
@@ -139,7 +170,7 @@ export default function QuizPage() {
   }
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < mockQuestions.length - 1) {
       setIsTransitioning(true)
       setTimeout(() => {
         setCurrentQuestionIndex(currentQuestionIndex + 1)
@@ -149,7 +180,8 @@ export default function QuizPage() {
         setTranscript("")
       }, 300)
     } else {
-      handleSubmit()
+      // Navigate to results page
+      window.location.href = "/results"
     }
   }
 
@@ -179,16 +211,6 @@ export default function QuizPage() {
 
   const handleShortAnswerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswers({ ...answers, [currentQuestion.id]: e.target.value })
-  }
-
-  const handleSubmit = async () => {
-    try {
-      const result = await apiService.submitAnswers(answers)
-      // Redirect to results page with the quiz ID
-      window.location.href = `/results?quizId=${result.quizId}`
-    } catch (error) {
-      console.error('Error submitting answers:', error)
-    }
   }
 
   const renderMCQQuestion = () => {
@@ -289,17 +311,6 @@ export default function QuizPage() {
     )
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 text-lg">Loading questions...</div>
-          <Progress value={33} className="w-[200px]" />
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b">
@@ -321,7 +332,7 @@ export default function QuizPage() {
                 </Button>
               </Link>
               <div className="text-sm text-muted-foreground">
-                Question {currentQuestionIndex + 1} of {questions.length}
+                Question {currentQuestionIndex + 1} of {mockQuestions.length}
               </div>
             </div>
 
@@ -376,7 +387,7 @@ export default function QuizPage() {
                     )}
 
                     <Button onClick={handleNextQuestion}>
-                      {currentQuestionIndex < questions.length - 1 ? "Next" : "See Results"}
+                      {currentQuestionIndex < mockQuestions.length - 1 ? "Next" : "See Results"}
                     </Button>
                   </div>
                 </div>
@@ -396,4 +407,3 @@ export default function QuizPage() {
     </div>
   )
 }
-
